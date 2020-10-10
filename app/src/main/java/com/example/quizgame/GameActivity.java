@@ -1,11 +1,15 @@
 package com.example.quizgame;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.quizgame.model.WordItem;
@@ -73,18 +77,51 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
          mButtons[i].setText(mItemList.get(i).word);
       }
    }
-
+   int point=0;
+   int count=0;
+   TextView score;
    @Override
    public void onClick(View view) {
       Button b = findViewById(view.getId());
       String buttonText = b.getText().toString();
 
-      if (buttonText.equals(mAnswerWord)) {
-         Toast.makeText(GameActivity.this, "ถูกต้องครับ", Toast.LENGTH_SHORT).show();
-      } else {
-         Toast.makeText(GameActivity.this, "ผิดครับ", Toast.LENGTH_SHORT).show();
-      }
+      score = findViewById(R.id.score_text_view);
 
+      if (buttonText.equals(mAnswerWord)) {
+         Toast.makeText(GameActivity.this, "ถูกต้อง", Toast.LENGTH_SHORT).show();
+         point++;
+         count++;
+         score.setText(Integer.toString(point)+" คะแนน");
+
+      } else {
+         Toast.makeText(GameActivity.this, "ผิด", Toast.LENGTH_SHORT).show();
+         count++;
+         score.setText(Integer.toString(point)+" คะแนน");
+      }
+     if (count==5) {
+         AlertDialog.Builder dialog = new AlertDialog.Builder(GameActivity.this);
+         dialog.setTitle("สรุปผล");
+         dialog.setMessage("คุณได้ "+point+" คะแนน\nคุณต้องการเล่นเกมใหม่หรือไม่");
+         dialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+               point=0;
+               count=0;
+               score.setText(" 0 คะแนน");
+               newQuiz();
+            }
+         });
+
+         dialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+               Intent intent = new Intent(GameActivity.this,MainActivity.class);
+               startActivity(intent);
+            }
+         });
+         dialog.show();
+      }
       newQuiz();
+
    }
 }
